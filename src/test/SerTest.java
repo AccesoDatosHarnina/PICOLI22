@@ -15,7 +15,7 @@ class SerTest {
 	Ser ser;
 	@BeforeEach
 	void beforeEach() {
-		ser=ControlSer.crearSer(50);
+		ser=ControlSer.crearSer(50,100);
 	}
 
 	@Test
@@ -24,7 +24,7 @@ class SerTest {
 		int periodos=18;
 		do {
 			ser.vivir(cantidadInsuficienteLimite);
-			ser=ControlSer.controlarEtapas(ser);
+			ser=ControlSer.controlarEtapas(ser,100);
 		}while(periodos-->0);
 		assertTrue(!ser.isAlive());
 	}
@@ -35,7 +35,7 @@ class SerTest {
 		int periodos=18;
 		do {
 			ser.vivir(cantidadSuficienteLimite);
-			ser=ControlSer.controlarEtapas(ser);
+			ser=ControlSer.controlarEtapas(ser,100);
 		}while(periodos-->0);
 		assertTrue(ser.isAlive());
 	}

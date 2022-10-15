@@ -6,27 +6,31 @@ public class Ser {
 	// schema de Ser
 	private static final int vidaMax = 120;
 	private static final int vidaMin = 0;
-	protected int necesidadVital;
 	protected float esperanzaVida;
 	protected int edad = 0;
+	protected int necesidadVital;
 
-	public Ser(int necesitadVital) {
+	public Ser() {
 		super();
 		this.esperanzaVida = this.calculaEsperanzaVida(vidaMin, vidaMax);
-		this.necesidadVital=necesitadVital;
 	}
 
-	public Ser(Ser ser) {
+	public Ser(Ser ser,int necesidadVital) {
 		this.esperanzaVida = ser.esperanzaVida;
 		this.edad=ser.edad;
-		this.necesidadVital=ser.necesidadVital;
+		this.necesidadVital=necesidadVital;
 	}
 	
 
-	public Ser(float esperanzaVida,int necesitadVital) {
+	public Ser(float esperanzaVida,int necesidadVital) {
 		super();
 		this.esperanzaVida = esperanzaVida;
-		this.necesidadVital=necesitadVital;
+		this.necesidadVital=necesidadVital;
+	}
+
+	public Ser(int necesidadVital) {
+		this();
+		this.necesidadVital=necesidadVital;
 	}
 
 	// comportamiento igual para todos
@@ -54,18 +58,18 @@ public class Ser {
 		alimentarBase(cantidad);
 	}
 
-	protected void alimentarPersona(CondicionesAlimentacion cd) {
-		float porcentaje = cd.getCantidad() * 100 / this.necesidadVital;
-		if (porcentaje <= cd.getPorcenMax() && porcentaje >= cd.getPorcenMin()) {
-			this.esperanzaVida -= cd.getPeriodoMin();
-		} else if (porcentaje <= cd.getPeriodoMin() - 1) {
-			this.esperanzaVida -= cd.getPeriodoMax();
+	//alimentarAnciano
+	protected void alimentarPersona(CondicionesAlimentacion condicionesAlimentacion) {
+		float porcentaje = condicionesAlimentacion.getCantidad() * 100 / necesidadVital;
+		if (porcentaje <= condicionesAlimentacion.getPorcenMax() && porcentaje >= condicionesAlimentacion.getPorcenMin()) {
+			this.esperanzaVida -= condicionesAlimentacion.getPeriodoMin();
+		} else if (porcentaje <= condicionesAlimentacion.getPeriodoMin() - 1) {
+			this.esperanzaVida -= condicionesAlimentacion.getPeriodoMax();
 		}
 	}
 
 	private void alimentarBase(int cantidad) {
-		alimentarPersona(new CondicionesAlimentacion(
-				cantidad,99, 33, 1f, 2f));
+		alimentarPersona(new CondicionesAlimentacion(cantidad, 99, 33, 1f, 2f));
 	}
 
 	private int calculaEsperanzaVida(int minimo, int maximo) {

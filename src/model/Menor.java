@@ -4,8 +4,8 @@ public class Menor extends Ser {
 	//especifico de menor
 	private float factorDeDesarrollo = 0;
 	
-	public Menor(int necesidadVital) {
-		super(necesidadVital);
+	public Menor() {
+		super();
 	}
 
 	public Menor(int vida,int necesidadVital) {
@@ -27,7 +27,7 @@ public class Menor extends Ser {
 		alimentarMenor(cantidad);
 	}
 	private void alimentarMenor(int cantidad) {
-		float porcentaje = (float) cantidad * 100 / this.necesidadVital;
+		float porcentaje = (float) cantidad * 100 / necesidadVital;
 		this.factorDeDesarrollo += 5.5f * porcentaje / 100;
 	};
 	
