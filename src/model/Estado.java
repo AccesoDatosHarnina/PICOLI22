@@ -15,19 +15,13 @@ public class Estado {
 	private final int produccionPorTrabajador = 400;
 	private int necesidadVitalBase = 100;
 	private long muertosEnPeriodo = 0;
-	private long capital = 0;
-	private long presupuestoNecesario = 0;
-	Map<TiposSector, Float> porcentajesPorSector;
-
+	private Hacienda hacienda;
+	
 	public Estado() {
 		super();
 		crearSectores();
 		new EstadoOM().crearEstado(sectors, 10, 10, 10, 10);
-		porcentajesPorSector = Arrays.asList(TiposSector.values()).stream().collect(Collectors.toMap((k) -> {
-			return k;
-		}, (v) -> {
-			return 1f;
-		}));
+		hacienda=new Hacienda(sectors);
 	}
 
 	// funciones a realizar
@@ -37,8 +31,8 @@ public class Estado {
 	}
 
 	private void cerrarPeriodoAnterior() {
-		incrementarCapital(calcularProduccionTotal());
-		pagar();
+		hacienda.incrementarCapital(calcularProduccionTotal());
+		hacienda.pagar();
 		envejecerPoblacion();
 		muertosEnPeriodo = enterrarMuertos();
 	}
@@ -48,52 +42,6 @@ public class Estado {
 		long diferencia = demandaProxima - calcularProduccionTotal();
 		gestionEmpleados(diferencia);
 		gestionNacimientos();
-	}
-
-	public void incrementarCapital(long calcularProduccionTotal) {
-		this.capital += calcularProduccionTotal;
-	}
-
-	void pagar() {
-		presupuestoNecesario = calcularPresupuesto(sectors);
-		if (isDeficit())
-			reducirPresupuestoSectores(sectors);
-	}
-
-	private long calcularPresupuesto(HashMap<TiposSector, Sector> sectors) {
-		// Esta forma se hace despues
-		return sectors.values().stream().mapToLong((sector) -> {
-			return sector.calcularPresupuesto();
-		}).sum();
-	}
-	
-	private void reducirPresupuestoSectores(HashMap<TiposSector, Sector> sectors) {
-		TiposSector[] valuesOrdenados = { TiposSector.menores, TiposSector.ancianos, TiposSector.trabajadores };
-		int index = 0;
-		while (isDeficit() && index < valuesOrdenados.length) {
-			reducirPresupuestoUnSector(valuesOrdenados[index], sectors.get(valuesOrdenados[index++]));
-		}
-	}
-	
-	private void reducirPresupuestoUnSector(TiposSector tipoSector, Sector sector) {
-		long calcularPresupuesto = sector.calcularPresupuesto();
-		presupuestoNecesario -= calcularReduccionSector(calcularPresupuesto, tipoSector);
-	}
-	
-	private long calcularReduccionSector(long calcularPresupuesto, TiposSector tipoSector) {
-		float reduccionPorcentajeSegunDeficit = ((float) calcularPresupuesto - getDeficit()) / calcularPresupuesto;
-		if (reduccionPorcentajeSegunDeficit < tipoSector.getTopesReduccion())
-			reduccionPorcentajeSegunDeficit = tipoSector.getTopesReduccion();
-		porcentajesPorSector.put(tipoSector, reduccionPorcentajeSegunDeficit);
-		return (long) (calcularPresupuesto - calcularPresupuesto * reduccionPorcentajeSegunDeficit);
-	}
-
-	private boolean isDeficit() {
-		return capital < presupuestoNecesario;
-	}
-
-	private long getDeficit() {
-		return Math.abs(capital - presupuestoNecesario);
 	}
 
 	private void crearSectores() {
@@ -162,14 +110,6 @@ public class Estado {
 
 	public Map<TiposSector, Sector> getSectors() {
 		return sectors;
-	}
-
-	public Long getPrespuestoNecesario() {
-		return this.presupuestoNecesario;
-	}
-
-	public void setCapital(long capital2) {
-		this.capital=capital2;
 	}
 
 }
